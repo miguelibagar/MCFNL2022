@@ -13,7 +13,7 @@ class FDTD2D:
         c0 = 1.0
         
         self.Dx = ss[1] - ss[0]
-        self.Dt = 0.8*self.Dx/c0 
+        self.Dt = 0.5*self.Dx/c0 
         
         self.E = 0.0*self.Xgrid
         self.Hx = 0.0*self.XGrid_Hx
@@ -24,7 +24,7 @@ class FDTD2D:
         E = self.E
         Hx = self.Hx
         Hy = self.Hy
-
+        
         E[1:-1,1:-1] = E[1:-1,1:-1] +\
             (self.Dt/(self.Dx)) * (Hy[1:-1,1:] - Hy[1:-1,:-1]) -\
             (self.Dt/(self.Dx)) * (Hx[1:,1:-1] - Hx[:-1,1:-1]) 
