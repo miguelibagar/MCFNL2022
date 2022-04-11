@@ -18,22 +18,11 @@ ss = np.linspace(xIni,xEnd,N)
 
 fdtd = FDTD2D(ss)
 
-## -- Condiciones iniciales
-sigma= (xIni-xEnd)/10.0
-
-fdtd.E = np.exp( - (np.power(fdtd.Xgrid,2) + np.power(fdtd.Ygrid,2)) / \
-                (2.0*sigma**2))
-fdtd.Hx = fdtd.XGrid_Hx*0.0
-fdtd.Hy = fdtd.XGrid_Hy*0.0
-
-## -- Algoritmo
-t = 0.0
-while t<tEnd:
-    t = fdtd.step(t)
-    
 ##################################
 ## Animacion
 ##################################
+
+sigma= (xIni-xEnd)/10.0
 
 t = 0.0
 fig = plt.figure(figsize = (15,15))
