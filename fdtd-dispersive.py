@@ -1,4 +1,3 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -88,4 +87,3 @@ plt.figure()
 plt.plot(grid,np.real(Enew))
 plt.plot(dualGrid,np.real(Hnew))
 plt.grid()
-plt.show()
