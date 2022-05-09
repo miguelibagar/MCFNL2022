@@ -13,8 +13,11 @@ c = 1
 cVec = np.array([5.987e-1 +4.195e3j,-2.211e-1+2.680e-1j,-4.240+7.324e2j])
 aVec = np.array([-2.502e-2-8.626e-3j,-2.021-9.407e-1j,-1.467e1-1.338j])
 
+#cVec = np.array([5.987e-1 +4.195e3j])
+#aVec = np.array([-2.502e-2-8.626e-3j])
+
 ## -- Grid
-tEnd = 2.0
+tEnd = 5
 
 xIni = 0
 xEnd = 10
@@ -51,18 +54,19 @@ Enew = Eold*(0+0j)
 Jnew = Jold*(0+0j)
 Hnew = Hold*(0+0j)
 
-# Aqui pongo condiciones de contorno de campo nulo
-# El campo electrico tiene la cosa de que llega hasta los extremos
-Enew[0] = 0.0
-Enew[-1] = 0.0
+suma2 = 100+ np.sum(np.real(bVec))
 
-suma2 = np.sum(np.real(bVec))
+limite = 80
 
 t=0.0
 while t < tEnd:
     suma1 = np.real(np.sum(Jold*k1Vec,axis=1))
+            
+    Enew[1:limite] = Eold[1:limite] - (Dt/(eps*Dx))*(Hold[1:limite]-Hold[0:(limite-1)])
+    #Enew[1:3] = Eold[1:3] - (Dt/(eps*Dx))*(Hold[1:3]-Hold[0:2])
     
-    Enew[1:-1] = Eold[1:-1] + (Dt/suma2)*((Hold[1:] - Hold[:-1])/Dx - suma1[1:-1])
+    Enew[limite:-1] = Eold[limite:-1] + (Dt/suma2)*((Hold[limite:] - Hold[(limite-1):-1])/Dx - suma1[limite:-1])
+    #Enew[3:-1] = Eold[3:-1] + (Dt/suma2)*((Hold[3:] - Hold[2:-1])/Dx - suma1[3:-1])
     
     for p in range(len(cVec)):
         Jnew[:,p] = Jold[:,p]*kVec[p] + (bVec[p]/Dt)*(Enew-Eold)
@@ -83,7 +87,13 @@ while t < tEnd:
 # Luego grid[:-1] coge desde el primero hasta el penultimo y
 # grid[1:] coge desde el segundo hasta el ultimo
 
+plt.close()
 plt.figure()
 plt.plot(grid,np.real(Enew))
 plt.plot(dualGrid,np.real(Hnew))
+plt.legend(['Electrico','Magnetico'])
+plt.xlim(0,11)
+plt.ylim(-3,3)
+rectangle = plt.Rectangle((limite/xEnd,-3.0),4,6,fc='blue',ec="blue")
+plt.gca().add_patch(rectangle)
 plt.grid()
