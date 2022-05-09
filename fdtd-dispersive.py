@@ -13,7 +13,7 @@ c = 1
 ## - Parametrizacion de la permitividad
 # cVec = np.array([5.987e-1 +4.195e3j,-2.211e-1+2.680e-1j,-4.240+7.324e2j])
 #aVec = np.array([-2.502e-2-8.626e-3j,-2.021-9.407e-1j,-1.467e1-1.338j])
-aVec = np.array([-20-30j,-20-10j,-10-10j])*1e-1
+aVec = np.array([-20-30j,-20-10j,-10-10j])*1e2
 
 cVec = np.array([-10-30j,-20-10j,20-10j])*1e4
 
@@ -28,11 +28,11 @@ xEnd = 10
 N = int(101)
 
 grid = np.linspace(xIni,xEnd,N)
-dualGrid = (grid[:-1] + grid[1:])/5.0 # Tiene un punto menos que el primal
+dualGrid = (grid[:-1] + grid[1:])/2.0 # Tiene un punto menos que el primal
 
 ## - Condicion inicial (gaussiana)
-media = (xIni + xEnd)/2.0
-sigma= (xIni-xEnd)/10.0
+media = (xIni + xEnd)/3.0
+sigma= (xIni-xEnd)/50.0
 
 Eini = np.exp( - np.power(grid - media,2) / (2.0*sigma**2))
 
@@ -64,14 +64,21 @@ Edata, Hdata = [],[]
 fig = plt.figure(figsize = (15,15))
 ax = fig.add_subplot(111)
 
-suma2 = 0 + np.sum(np.real(bVec))
+suma2 = 200 + np.sum(np.real(bVec))
 
 limite = 40
 
+acum = 0
+suma1 = np.zeros(N)*(0+0j)
+
 t=0.0
 while t < tEnd:
-    suma1 = np.real(np.sum(Jold*k1Vec,axis=1))
-            
+    for i in range(N):
+        for p in range(len(cVec)):
+            acum = acum + Jold[i,p]*(1+kVec[p])
+        suma1[i] = np.real(acum)
+        acum = 0
+
     #Enew[1:limite+1] = Eold[1:limite+1] - (Dt/(eps*Dx))*(Hold[1:limite+1]-Hold[0:(limite)])
     #Enew[1:3] = Eold[1:3] - (Dt/(eps*Dx))*(Hold[1:3]-Hold[0:2])
     
@@ -107,15 +114,15 @@ while t < tEnd:
 # grid[1:] coge desde el segundo hasta el ultimo
 
 # plt.close()
-# plt.figure()
-# plt.plot(grid,np.real(Enew))
-# plt.plot(dualGrid,np.real(Hnew))
-# plt.legend(['Electrico','Magnetico'])
-# #plt.xlim(0,11)
-# #plt.ylim(-3,3)
-# rectangle = plt.Rectangle((limite/xEnd,-3.0),4,6,fc='blue',ec="blue")
-# plt.gca().add_patch(rectangle)
-# plt.grid()
+plt.figure()
+plt.plot(grid,np.real(Enew))
+plt.plot(dualGrid,np.real(Hnew))
+plt.legend(['Electrico','Magnetico'])
+#plt.xlim(0,11)
+#plt.ylim(-3,3)
+rectangle = plt.Rectangle((limite/xEnd,-3.0),4,6,fc='blue',ec="blue")
+plt.gca().add_patch(rectangle)
+plt.grid()
 
 
 
@@ -123,7 +130,7 @@ while t < tEnd:
 
 def animate(i):
     ax.clear()
-    ax.set(xlim=(0, 10), ylim=(-1.5, 1.5))
+    ax.set(xlim=(0, 10), ylim=(-10, 10))
 
     ax.plot(grid,Edata[i],'o' ,color = 'darkblue',markersize=2)
     ax.plot(dualGrid,Hdata[i],'o',color = 'red',markersize=2)
